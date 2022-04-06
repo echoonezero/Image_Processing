@@ -1,0 +1,29 @@
+%Morphology with binary images
+I = imread("IMG_002.jpg");
+gs = im2gray(I);
+gs = imadjust(gs);
+H = fspecial("average",3);
+gs = imfilter(gs,H,"replicate");
+SEdisk = strel("disk",8);
+Ibg = imclose(gs,SEdisk);
+gsSub =  Ibg - gs; 
+BW = ~imbinarize(gsSub);
+imshowpair(I,BW,"montage")
+
+SE = strel("rectangle", [3 25]);	%You can create a rectangular structuring element using strel with a size array in the format [height width]
+BWstripes = imopen(BW, SE)	%to emphasize the dark text, perform the open operation
+imshow(BWstripes)
+
+%analyze whether or not the opening operation has improved the image processing algorithm by plotting the row sum
+S = sum(BWstripes, 2)
+plot(S)
+
+%The improvement becomes more noticeable if original row sum signal is plotted alongside the opened image row sum.
+Sbw = sum(BW, 2)
+hold on
+plot(Sbw)
+hold off
+
+%opening operation has increased the valley depths in the plot. Hence it has helped.
+
+

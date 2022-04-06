@@ -1,0 +1,26 @@
+%Background subtraction
+I = imread("IMG_001.jpg");
+gs = im2gray(I);
+gs = imadjust(gs);
+H = fspecial("average",3);
+gs = imfilter(gs,H,"replicate");
+BW = imbinarize(gs,"adaptive","ForegroundPolarity","dark");
+imshowpair(gs,BW,"montage")
+
+%Structuring elements are created using the strel function.
+SE = strel("disk", 8)
+
+%Closing the image will emphasize and connect the brighter background, removing the thin dark lettering.
+Ibg = imclose(gs, SE)
+imshow(Ibg)
+
+%Because imclose emphasizes brightness in an image, the background image Ibg has higher intensities than gs. Subtracting Ibg from gs would result in negative intensities. To avoid negative intensities, subtract gs from Ibg instead of sutracting Ibg from gs.
+gsSub = Ibg - gs	
+imshow(gsSub)
+
+%and now invert the subtracted image
+BWsub = ~(imbinarize(gsSub))
+imshow(BWsub)
+
+%Notice that with good preprocessing, adaptive thresholding wasn't needed. The binarized image BWsub fully captures the text and little else.
+
