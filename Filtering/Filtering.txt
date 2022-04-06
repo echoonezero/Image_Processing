@@ -1,0 +1,19 @@
+%Filtering noise
+I = imread("IMG_007.jpg");
+gs = im2gray(I);
+gs = imadjust(gs);
+BW = imbinarize(gs,"adaptive","ForegroundPolarity","dark");
+imshowpair(gs,BW,"montage")
+
+H = fspecial("average",3)	%create 3*3 averaging filter
+gssmooth = imfilter(gs,H)		%apply the filter to the image
+
+BWsmooth = imbinarize(gssmooth, "adaptive", "ForegroundPolarity", "dark")
+imshow(BWsmooth)
+
+gssmooth = imfilter(gs,H, "replicate")	%replicate option avoids unnecessary dark outlines on black spots
+
+BWsmooth = imbinarize(gssmooth, "adaptive", "ForegroundPolarity", "dark")
+imshow(BWsmooth)		%binarize and display again
+
+

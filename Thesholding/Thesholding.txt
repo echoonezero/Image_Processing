@@ -1,0 +1,23 @@
+%Thesholding Intensity Values
+img = imread("IMG_001.jpg");
+gs = im2gray(img);
+gsAdj = imadjust(gs);
+imshow(gsAdj)
+imhist(gsAdj)	%The histogram shows a large peak between 220 and 250, which contains  bright pixels in the paper and background. To create a better segmentation, use a threshold that's just below this peak.
+
+BW = gsAdj > 200;
+imshow(BW)
+
+%Automatic Thresholding
+%use the imbinarize function, which calculates the "best" threshold for the image
+
+BW = imbinarize(gsAdj);
+imshow(BW)
+
+BWadapt = imbinarize(gsAdj, "adaptive");	%use adaptive option to optimise the threshold better
+imshowpair(gsAdj, BWadapt, "montage")		%this is completely opposite to what we wanted. foreground and background is reversed.
+
+BWadapt = imbinarize(gsAdj, "adaptive", "ForegroundPolarity","dark");	%set foreground polarity option to dark because for receipts, background is light.
+imshowpair(gsAdj, BWadapt, "montage")
+
+
