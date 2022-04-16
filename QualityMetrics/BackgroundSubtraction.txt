@@ -1,0 +1,34 @@
+%Removing Background in an Image
+load tumorReducedSize.mat
+tumorBW = imbinarize(tumor);
+filterSize = [15 15];
+tumorMed = medfilt2(tumor,filterSize); 
+tumorMedBW = imbinarize(tumorMed);
+montage({tumor,tumorBW;tumorMed,tumorMedBW},"Size",[2 2])
+
+%To perform background subtraction, you must first define a neighbothood. You can use the ones function to create a square neighborhood
+nhood = ones(30)	% use nhood = strel("disk",25) and see the changes
+
+%imtophat function removes uneven background illumination when the background is darker than the foreground. This does both the background estimation and subtraction
+tumorTopHat = imtophat(tumorMed, nhood)
+imshow(tumorTopHat)
+tumorBW = imbinarize(tumorTopHat)
+imshow(tumorBW)
+
+
+%Removing Unevenly Bright Background in an Image
+book = imread("book.jpg");
+book = im2gray(book);
+bookAdapt = adapthisteq(book);
+imshowpair(book,bookAdapt,"montage")
+
+%When the background is bright, you need to even out variation in bright intensities. Use imbothat to subtract the image from its bright background.
+nhood = ones(10)
+bookBotHat = imbothat(bookAdapt, nhood)
+imshow(bookBotHat)
+
+bookBotHat = imcomplement(bookBotHat)
+imshow(bookBotHat)			% use imcomplement to invert a grayscale image.
+
+
+

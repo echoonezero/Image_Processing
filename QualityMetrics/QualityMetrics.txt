@@ -1,0 +1,47 @@
+%Understanding Quality Metrics
+%Comparing compression techniques - Full reference quality metric
+
+tumorRef = imread("tumorLargeFile.jpg");  % original, large file
+load tumorReducedSize.mat                 % image reduced wtih block processing
+imshowpair(tumorRef,tumor,"montage")
+
+szRef = size(tumorRef)
+tumorBP = imresize(tumor, szRef)		%Enlarge tumor to ref image size
+
+%create a comparison image that has been compressed and restored with the built-in function imresize
+szReduced = size(tumor);
+tumorRS = imresize(tumorRef,szReduced);
+tumorRS = imresize(tumorRS,szRef);
+
+%compare tumorBP to tumorRS, which was created in the script by using imresize to shrink and restore the image by the same amount. The peak signal-to-noise ratio of an image with respect to a reference can be calculated with the psnr function. The higher the value, the better the quality.
+
+peaksnrBP = psnr(tumorBP, tumorRef)
+peaksnrRS = psnr(tumorRS, tumorRef)
+
+%PSNR looks only at intensity difference. There are other full-reference metrics that attempt to determine if qualities of the image are preserved. For instance, the structural similarity (SSIM) index can better reflect how well structures (e.g. edges and corners) are preserved. The SSIM index is between 0 and 1, with higher numbers representing better quality.
+
+ssimBP = ssim(tumorBP, tumorRef)
+ssimRS = ssim(tumorRS, tumorRef)
+
+
+%No reference quality metric
+load filteredTumorImages.mat
+montage({tumorAvg tumorMed tumorW})
+
+%The Natural Image Quality Evaluator (NIQE) can measure the quality of images with arbitrary distortion with a lower score being better. NIQE is opinion-unaware. So, it may not correlate as well as an opinion-aware score with human perception of quality.
+niqeAvg = niqe(tumorAvg)
+niqeMed = niqe(tumorMed)
+niqeW = niqe(tumorW)
+
+%The opinion-aware Blind/Referenceless Image Spatial Quality Evaluator, or BRISQUE, model is trained on a database of images with known distortions and subjective quality scores. The database contains images with known distortion such as compression artifacts, blurring, and noise, and it contains pristine versions of the distorted images. These medical scans struggle with the balance of blurring and noise, so this metric may be appropriate here. To calculate the BRISQUE score, use the brisque function.
+
+bAvg = brisque(tumorAvg)
+bMed = brisque(tumorMed)
+bWien = brisque(tumorW)
+
+
+
+
+
+
+

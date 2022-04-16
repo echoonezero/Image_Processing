@@ -1,0 +1,108 @@
+Summary: Preprocessing
+Adjusting Contrast
+You may need to adjust contrast to improve appearance of an image or the performance of an image processing algorithm. Below are some techniques and their effects on this dimly illuminated medical slide and its intensity histogram.
+
+
+Medical slide images from the "C.elegans infection live/dead image set Version 1" provided by Fred Ausubel and available from the Broad Bioimage Benchmark Collection.
+
+Method 	Command 	Effect on an Image 	Intensity Histogram
+Histogram Stretching
+Stretch the intensity histogram to span the entire range. The bottom and top 1% of the intensities are saturated to emphasize the difference between very bright and very dark regions. 	
+
+I2 = imadjust(I);
+                
+
+
+See the documentation for finer control of input and output intensity limits. 		
+Histogram Equalization
+Stretch the intensity histogram to approximate a uniform distribution. 	
+
+I2 = histeq(I);
+                
+
+
+See the documentation to fit the intensity histogram to other distributions. 		
+Adaptive Histogram Equalization
+Enhance contrast locally. The transformed histogram does not necessarily take up the entire intensity range. 	
+
+I2 = adapthisteq(I);
+                
+
+
+See the documentation to fit the intensity histogram to other distributions. 		
+Block Processing
+You can process your image by blocks by wrapping your algorithm in a block processing function and passing it to blockproc. This is helpful to
+
+    make your own algorithm adaptive,
+    parallelize your algorithm, and
+    work with large data files out of memory by reading, processing, and writing output one block at a time.
+
+
+
+
+imBP = blockproc(im,blockSize,@functionName);
+    
+
+
+
+The block processing function can be an anonymous or local function within the file or be contained in a separate file on the path. The input is a block struct with fields containing information about the block being processed.
+
+blockIm = blockStruct.data       % image data for the current block
+blockSz = blockStruct.blockSize  % size of the block of data
+imSz = blockStruct.imageSize     % size of the original image
+
+
+
+See the documentation for blockproc for other parameters, fields of the block struct, and instructions for processing images out of memory.
+Spatial Filtering
+Spatial filtering can be used to smooth images and reduce noise. This can improve the appearance of an image or the output of an image processing algorithm. When filtering an image, you often balance removing noise with blurring detail.
+
+Method 	Syntax 	Effect on Image of 5-by-5 Filter
+Linear Filter
+You can create your own linear filter. The code for an averaging filter with symmetric padding is here.
+
+See the documentation for other types of filters and border padding. 	
+
+avg = fspecial("average",[m n]);
+imAvg = imfilter(I,avg,"symmetric");
+                
+
+	
+Median Filter
+Take the median value within a neighborhood. This is good at removing salt and pepper noise while preserving edges.
+
+See the documentation for other types of border padding. 	
+
+imMed = medfilt2(I,[m n],"symmetric");
+                
+
+	
+Wiener Filter
+The Wiener filter is an adaptive filter that smooths less in areas of high variation (therefore preserving edges) and more in areas of low variation, like the background. 	
+
+imMed = wiener2(I,[m n]);
+                
+
+	
+Image Quality Metrics
+There are two types of quality metrics depending on the type of image and your application—full-reference and no-reference metrics. The type of image quality metric you use depends on whether or not you have a reference image with no distortion. Full-reference quality metrics and no-reference quality metrics
+For example:
+
+scoreFullRef = psnr(I,ref)
+scoreNoRef = niqe(I)
+    
+
+Background Subtraction
+When the background is dark, you can use imtophat to perform background subtraction. The neighborhood needs to be large enough to include a bit of background when covering a foreground object.
+
+I2 = imtophat(I,nhood);
+    
+
+Background subtraction of dark background of a medical slide
+Use imbothat when the background is bright. This inverts the intensities. You can use imcomplement to make the foreground (the text below) dark again.
+
+I2 = imbothat(I,nhood);
+    
+
+
+Background subtraction of bright background of pages in a book of text

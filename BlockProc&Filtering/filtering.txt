@@ -1,0 +1,52 @@
+% Remove Noise with a Linear Filter
+load tumorReducedSize.mat
+tumorBW = imbinarize(tumor);
+imshowpair(tumor,tumorBW,"montage")
+
+% create a filter using the fspecial function. An "average" filter replaces each pixel with the average of the pixels in the window around it.
+avg = fspecial("average", [3 3])
+
+%use imfilter to filter an image with a specified filter.
+tumorAvg = imfilter(tumor, avg)
+imshow(tumorAvg)
+
+%Notice that the edges of tumorAvg are dark, even in the upper left where the edges used to be white. This is because edge pixels don't have a full neighborhood around them. By default imfilter pads the boundary with zeros. This darkens the edges. Specify a different boundary padding method as a third input to imfilter. The  "symmetric" method reflects the array across the border.
+
+tumorAvg = imfilter(tumor, avg, "symmetric")
+imshow(tumorAvg)
+
+tumorAvgBW=imbinarize(tumorAvg)
+imshow(tumorAvgBW)
+
+%do the same process with 15*15 avg filter and see results
+avg = fspecial("average", [15 15])
+tumorAvg = imfilter(tumor, avg, "symmetric")
+tumorAvgBW=imbinarize(tumorAvg)
+imshow(tumorAvgBW)
+imshowpair(tumorAvg, tumorAvgBW, "montage")
+
+----------------------------------------------------------------------------------------------
+
+% Remove Noise with a Non Linear Filter
+
+load tumorReducedSize.mat
+tumorBW = imbinarize(tumor);
+imshowpair(tumor,tumorBW,"montage")
+
+%use medfilt2 to replace each pixel with the median of the ones around it.
+tumorMed = medfilt2(tumor, [15 15])
+imshow(tumorMed)
+
+%The goal of this preprocessing is to create a segmentation of the tumor. One way to segment a grayscale image is with the imbinarize function.
+
+tumorMedBW = imbinarize(tumorMed)
+imshow(tumorMedBW)
+
+%Another edge-preserving, nonlinear filter is the Wiener filter, which is adaptive
+tumorW = wiener2(tumor, [15 15])
+imshow(tumorW)
+
+tumorWBW = imbinarize(tumorW)
+imshow(tumorWBW)
+
+

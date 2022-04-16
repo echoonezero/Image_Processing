@@ -1,0 +1,47 @@
+%Block processing
+%Rescale an Image by Blocks
+
+book = imread("book.jpg");
+book = im2gray(book);
+imshow(book);
+
+function newBlock = adjustContrast(blockStruct)
+    % extract the image data for the block being processed 
+    % from the structure blockStruct
+	% This function scales the intensities of a block between 0 and 1 using the rescale function
+    block = blockStruct.data;
+    
+    % rescale this block
+    newBlock = rescale(block);
+end
+
+%adjust the contrast block-by-block using the blockproc function: imBP = blockproc(im,blockSize,@functionName);
+bookRSblck = blockproc(book, [25 25], @adjustContrast)	
+imshow(bookRSblck)
+
+%use bigger block sizes and notics the difference
+bookRSblckBig = blockproc(book, [100 75], @adjustContrast)	
+imshow(bookRSblckBig)
+
+-------------------------------------------------------------------------------------------------------------------------
+
+%Resizing an Image by Blocks
+tumorOriginal = imread("tumorLargeFile.jpg");
+imshow(tumorOriginal)
+
+% shrink the image of a tumor by replacing a block by its median value
+function newBlock = shrinkImage(blockStruct)
+    % shrinkImage extracts the block data from the input structure
+    % and finds its median and returns that scalar as the output
+    
+    % extract the data field of the structure blockStruct
+    block = blockStruct.data;
+    
+    % calculate the median of the data field and save to newBlock
+    newBlock = median(block,"all");
+    
+end
+
+tumor = blockproc(tumorOriginal, [15 15], @shrinkImage)	%Replace each 15-by-15 block of tumorOriginal with its median
+imshow(tumor)
+

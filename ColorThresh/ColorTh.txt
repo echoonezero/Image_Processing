@@ -1,0 +1,51 @@
+%Thresholding by Color. Segmenting Ripe Fruits. Use strawberry with leaves picture
+
+sb = imread("strawberryPlant.jpg");
+imshow(sb)
+[r,g,b] = imsplit(sb);	%extract individual color panes
+imshowpair(r,g,"montage")	
+sbBW = imbinarize(r)
+imshow(sbBW)
+
+redMask = r>150		%The segmentation using imbinarize included too many pixels. Try setting a global threshold manually with a relational operator.
+imshow(redMask)
+
+greenMask = g<50	%The corners have high intensities for all of the color planes since they are bright. So, they will be hard to exclude using the red color plane. Since red and green are the dominant colors in this image, another way to identify the strawberries is to look for pixels without much green.	
+	
+imshow(greenMask)
+
+%Thresholding with Multiple Color Planes. May be use both red and green panes to get better results.
+rgMask = (r>175) & (g < 150)
+imshow(rgMask)
+
+diffMask = r-g > 50		%this gives more better identification of ripe fruits
+imshow(diffMask)
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+%segment by hue—and other color qualities
+%Segmenting with L*a*b Color Space
+sbRGB = imread("strawberryPlant.jpg");
+imshow(sbRGB)
+sbLab = rgb2lab(sbRGB)
+L = sbLab(:,:,1)	%Luminance is stored in the first plane and contains brightness from black to white. Extract the first plane by indexing into the third dimension.
+histogram(L)	%Because luminance contains double-precision values outside of zero to one, use the histogram function to display the distribution of intensities.
+imshow(L, [])	%scale the values to between 0 and 1
+
+a = sbLab(:,:,2)	%Extract the a* plane. It is 2nd plane.
+imshow(a,[])
+b = sbLab(:,:,3)
+imshow(b,[])
+
+histogram(a)	% a* plane does the best job of separating the red strawberries from the green background
+
+redSBmask = a>21	%The higher values correspond to the strawberries, which have more red than green in them. SO, create a threshold.
+imshow(redSBmask)
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+%Segmenting Solar Flares
+sf = imread("solarFlare.jpg");
+imshow(sf)
+sfHSV = rgb2hsv(sf)
+[h,s,v] = imsplit(sfHSV)
+imshowpair(s,v, "montage")
+sfMask = (s<0.5) & (v>0.95)
+imshow(sfMask)

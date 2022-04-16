@@ -1,0 +1,48 @@
+%Image Preprocessing
+%Increasing Contrast
+
+roundworms = imread("worms.jpg");
+imshow(roundworms)
+imhist(roundworms)	%small span of histogram due to very low contrast
+rwAdj = imadjust(roundworms)	%adjusts histogram
+imshow(rwAdj)
+imhist(rwAdj)
+
+
+%Brightening low-light images
+lightimg = imlocalbrighten(rwAdj)
+
+
+%histogram Matching
+roundworms = imread("worms.jpg");
+rwAdj = imadjust(roundworms);
+imhist(rwAdj)
+
+roundworms2 = imread("worms2.jpg");
+imhist(roundworms2)
+
+rw2Adj = imadjust(roundworms2)	%increase contrast
+
+%To adjust an image I to match the intensity profile of a reference image Iref, use the imhistmatch function
+rw2Adj = imhistmatch(roundworms2, rwAdj)
+
+% use histogram equalization to create a uniform intensity distribution for unevenly lit images
+book = imread("book.jpg");		%image has shadow cast on book
+book = im2gray(book);
+imshowpair(book,imadjust(book),"montage")
+
+bookEq = histeq(book)
+imhist(bookEq)
+imshowpair(book, bookEq, "montage")	
+
+%The histeq function equalizes the histogram of the entire image. Since shadow is affecting some part of image use adaptive histogram equalizer
+bookAdapt = adapthisteq(book)
+imshowpair(book, bookAdapt, "montage")
+
+
+
+
+
+
+
+
