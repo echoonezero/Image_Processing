@@ -1,0 +1,21 @@
+%using double datatype on image operations
+
+[crop1980,m80] = imread("crop1980.png");
+crop1980 = ind2gray(crop1980,m80);
+imshow(crop1980)
+
+[crop2011,m11] = imread("crop2011.png");
+crop2011 = ind2gray(crop2011,m11);
+imshow(crop2011)
+
+diffIce = crop1980 - crop2011
+imshow(diffIce, [])
+
+crop1980 = im2double(crop1980)		%convert images to double datatype
+crop2011 = im2double(crop2011)
+
+diffIce = crop1980 - crop2011
+diffIce = rescale(diffIce)
+imshow(diffIce)			%With this image, you can see where there was more ice in 2011 (dark areas) and more ice in 1980 (bright areas). The gray areas are where the images were about the same (both water, exposed land, or covered in ice).
+imshowpair(crop1980, crop2011)		%areas where there was more glacier in 1980 show up as green
+
