@@ -1,0 +1,45 @@
+%Thresholding and Segmentation
+
+[glacier1980,map80] = imread("bearGlacier1980.png");
+gs1980 = ind2gray(glacier1980,map80);
+gs1980 = im2double(gs1980);
+
+[glacier2011,map11] = imread("bearGlacier2011.png");
+gs2011 = ind2gray(glacier2011,map11);
+gs2011 = im2double(gs2011);
+
+diffIce = gs1980 - gs2011;
+diffIce = rescale(diffIce);
+imshowpair(gs1980,gs2011,"montage")
+imshow(diffIce)
+
+ice1980 = diffIce>.7;
+imshow(ice1980)		% it is white everywhere the intensity of diffIce is greater than 0.7. White regions show the lost Ice.
+
+ice2011 = diffIce < 0.3
+imshow(ice2011)			% it is white everywhere the intensity of diffIce is less than 0.3. White regions show newly gained Ice.
+
+%To calculate the percent of the image that lost ice, compare the number of white pixels in ice1980 to the total number of pixels in the image.
+melt = (nnz(ice1980)/numel(ice1980))*100
+
+%A more accurate way to estimate glacial melt is to calculate the percent change of ice in the image. Formula = (((Finalice)−(Initialice))/Initialice)×100
+bw1980 = imbinarize(gs1980)
+imshow(bw1980)
+bw2011 = imbinarize(gs2011)
+imshow(bw2011)
+imshowpair(bw1980,bw2011)
+
+melt = ((nnz(bw2011) - nnz(bw1980))/nnz(bw1980))*100
+
+
+
+
+
+
+
+
+
+
+
+
+
